@@ -412,6 +412,7 @@ if [[ -z ${nixos_system-} ]] && [[ ${build_on_remote-n} == "y" ]]; then
   step Building the system closure
   nixos_system=$(
     nix_build "${flake}#nixosConfigurations.\"${flakeAttr}\".config.system.build.toplevel" \
+      --system x86_64-linux \
       --builders "ssh://$ssh_connection?remote-store=local?root=/mnt $is_arch-linux $ssh_key_dir/nixos-anywhere - - - - $pubkey "
   )
 fi
