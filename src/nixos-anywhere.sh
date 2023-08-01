@@ -394,13 +394,20 @@ if [[ -z ${disko_script-} ]] && [[ ${build_on_remote-n} == "y" ]]; then
   step Building disko script
   disko_script=$(
     nix_build "${flake}#nixosConfigurations.\"${flakeAttr}\".config.system.build.diskoScript" \
-      --builders "ssh://$ssh_connection i686-linux,x86_64-linux $ssh_key_dir/nixos-anywhere - - - - $pubkey "
+      --builders "ssh://$ssh_connection i686-linux=1,x86_64-linux=1 $ssh_key_dir/nixos-anywhere - - - - $pubkey "
   )
 fi
 step Formatting hard drive with disko
 nix_copy --to "ssh://$ssh_connection" "$disko_script"
 ssh_ "$disko_script"
 
+if [[ -z ${nixos_system-} ]] && [[ ${build_on_remote-n} == "y" ]]; then
+  step Building the system closure
+  nixos_system=$(
+    nix_build "${flake}#nixosConfigurations.\"${flakeAttr}\".config.system.build.toplevel" \
+      --builders "ssh://$ssh_connection?remote-store=local?root=/mnt x86_64-linux=1,i686-linux=1 $ssh_key_dir/nixos-anywhere - - - - $pubkey"
+  )
+fi
 if [[ ${stop_after_disko-n} == "y" ]]; then
   # Should we also do this for `--no-reboot`?
   echo "WARNING: leaving temporary ssh key at '$ssh_key_dir/nixos-anywhere' to login to the machine" >&2
