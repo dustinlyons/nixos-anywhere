@@ -66,6 +66,7 @@ enable_debug=""
 maybe_reboot="sleep 6 && reboot"
 nix_options=(
   --extra-experimental-features 'nix-command flakes'
+  --system "x86_64-linux"
   "--no-write-lock-file"
 )
 substitute_on_destination=y
@@ -197,7 +198,6 @@ nix_copy() {
 nix_build() {
   NIX_SSHOPTS="-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i $ssh_key_dir/nixos-anywhere" nix build \
     --print-out-paths \
-    --system x86_64-linux \
     --no-link \
     "${nix_options[@]}" \
     "$@"
