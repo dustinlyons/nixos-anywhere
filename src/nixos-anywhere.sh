@@ -394,7 +394,7 @@ if [[ -z ${disko_script-} ]] && [[ ${build_on_remote-n} == "y" ]]; then
   step Building disko script
   disko_script=$(
     nix_build "${flake}#nixosConfigurations.\"${flakeAttr}\".config.system.build.diskoScript" \
-      --builders "ssh://$ssh_connection x86_64-linux,i686-linux $ssh_key_dir/nixos-anywhere - - - - $pubkey "
+      --builders "ssh://$ssh_connection i686-linux,x86_64-linux $ssh_key_dir/nixos-anywhere - - - - $pubkey "
   )
 fi
 step Formatting hard drive with disko
@@ -412,8 +412,7 @@ if [[ -z ${nixos_system-} ]] && [[ ${build_on_remote-n} == "y" ]]; then
   step Building the system closure
   nixos_system=$(
     nix_build "${flake}#nixosConfigurations.\"${flakeAttr}\".config.system.build.toplevel" \
-      --system x86_64-linux \
-      --builders "ssh://$ssh_connection?remote-store=local?root=/mnt x86_64-linux,i686-linux $ssh_key_dir/nixos-anywhere - - - - $pubkey "
+      --builders "ssh://$ssh_connection?remote-store=local?root=/mnt i686-linux,x86_64-linux $ssh_key_dir/nixos-anywhere - - - - $pubkey "
   )
 fi
 step Uploading the system closure
